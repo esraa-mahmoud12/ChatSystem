@@ -1,6 +1,7 @@
 class ApplicationsController < ApplicationController
   before_action :set_application, only: %i[ show edit update destroy ]
 
+  
   # GET /applications or /applications.json
   def index
     @applications = Application.all
@@ -8,6 +9,10 @@ class ApplicationsController < ApplicationController
 
   # GET /applications/1 or /applications/1.json
   def show
+    @application = Application.find(params[:id])
+
+    # creates a new comment object with atricle_id already initialized
+    @chat = @application.chats.build
   end
 
   # GET /applications/new
@@ -21,16 +26,11 @@ class ApplicationsController < ApplicationController
 
   # POST /applications or /applications.json
   def create
-    @application = Application.new(application_params)
-
-    respond_to do |format|
-      if @application.save
-        format.html { redirect_to application_url(@application), notice: "Application was successfully created." }
-        format.json { render :show, status: :created, location: @application }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @application.errors, status: :unprocessable_entity }
-      end
+    @app = Application.new(application_params)
+    if @app.save
+      render json: {msg: "Application created successfully", token: @app[:token]}, status: :ok
+    else
+      render json: {msg: "Application creation failed. Please double check the data provided"}, status: :unprocessable_entity
     end
   end
 
@@ -65,6 +65,6 @@ class ApplicationsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def application_params
-      params.require(:application).permit(:token, :name, :chat_count)
+      params.require(:application).permit(:name)
     end
 end

@@ -4,7 +4,11 @@
 
 <div id="applications">
   <% @applications.each do |application| %>
-    <%= render application %>
+
+       application name : <%= application.name %>
+       <br>
+       chats in application : <%= application.chats.count %>
+    
     <p>
       <%= link_to "Show this application", application %>
     </p>

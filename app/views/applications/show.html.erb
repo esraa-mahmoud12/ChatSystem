@@ -1,6 +1,25 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @application %>
+<h2>chats</h2>
+<% @application.chats.each do |chat| %>
+  <p>
+    <strong>Chat number:</strong>
+    <%= chat.number %>
+  </p>
+
+  <% chat.messages.each do |message| %>
+     <%= message.body %>
+  <% end %>
+
+<% end %>
+
+<h2>Add a chat:</h2>
+<%= form_with model: [ @application, @application.chats.build ] do |form| %>
+
+  <p>
+    <%= form.submit %>
+  </p>
+<% end %>
 
 <div>
   <%= link_to "Edit this application", edit_application_path(@application) %> |

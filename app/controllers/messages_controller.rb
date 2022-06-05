@@ -3,8 +3,13 @@ class MessagesController < ApplicationController
 
   # GET /messages or /messages.json
   def index
-    @messages = Message.all
+    
+      @messages = Message.all
+    
+
   end
+  
+
 
   # GET /messages/1 or /messages/1.json
   def show
@@ -21,17 +26,13 @@ class MessagesController < ApplicationController
 
   # POST /messages or /messages.json
   def create
-    @message = Message.new(message_params)
+    @chat = Chat.find(params[:chat_id])
+    @chat.message_count = @chat.messagess.size
+    @chat.update(cmessage_count:@chat.messagess.size )
+    chat = @chat.messages.create
+    @message.update(message.number = @chat.messages.size+1)
 
-    respond_to do |format|
-      if @message.save
-        format.html { redirect_to message_url(@message), notice: "Message was successfully created." }
-        format.json { render :show, status: :created, location: @message }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @message.errors, status: :unprocessable_entity }
-      end
-    end
+    render json: {msg: "message created successfully", number: message.number}, status: :created
   end
 
   # PATCH/PUT /messages/1 or /messages/1.json
@@ -65,6 +66,6 @@ class MessagesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def message_params
-      params.require(:message).permit(:number)
+      params.require(:message).permit(:chat_id,:body)
     end
 end

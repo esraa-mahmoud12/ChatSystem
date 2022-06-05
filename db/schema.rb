@@ -10,24 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_03_154533) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_04_213317) do
   create_table "applications", charset: "latin1", force: :cascade do |t|
     t.string "token"
     t.string "name"
-    t.integer "chat_count"
+    t.integer "chat_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["token"], name: "index_applications_on_token", unique: true
   end
 
   create_table "chats", charset: "latin1", force: :cascade do |t|
-    t.integer "number"
+    t.integer "number", default: 1
     t.integer "message_count"
     t.bigint "application_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["application_id"], name: "index_chats_on_application_id"
-    t.index ["number", "application_id"], name: "index_chats_on_number_and_application_id", unique: true
   end
 
   create_table "messages", charset: "latin1", force: :cascade do |t|
@@ -35,15 +34,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_03_154533) do
     t.bigint "chat_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "body"
     t.index ["chat_id"], name: "index_messages_on_chat_id"
-    t.index ["number", "chat_id"], name: "index_messages_on_number_and_chat_id", unique: true
   end
 
-  create_table "posts", charset: "latin1", force: :cascade do |t|
-    t.string "name"
-    t.text "comment"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
+  add_foreign_key "chats", "applications"
+  add_foreign_key "messages", "chats"
 end

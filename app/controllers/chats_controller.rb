@@ -1,18 +1,25 @@
 class ChatsController < ApplicationController
   before_action :set_chat, only: %i[ show edit update destroy ]
 
+  
   # GET /chats or /chats.json
   def index
-    @chats = Chat.all
+    @application = Application.find(params[:application_id])
+    @chats=Chat.where(application_id: @application.id).all
+    
   end
 
   # GET /chats/1 or /chats/1.json
   def show
+    
+      @chat = Chats.find(params[:id])
+  
   end
 
   # GET /chats/new
   def new
     @chat = Chat.new
+
   end
 
   # GET /chats/1/edit
@@ -21,17 +28,18 @@ class ChatsController < ApplicationController
 
   # POST /chats or /chats.json
   def create
-    @chat = Chat.new(chat_params)
+    @application = Application.find(params[:application_id])
+    @application.chat_count = @application.chats.size
+    @application.update(chat_count:@application.chats.size )
+    chat = @application.chats.create
+    chat.number = @application.chats.size+1
 
-    respond_to do |format|
-      if @chat.save
-        format.html { redirect_to chat_url(@chat), notice: "Chat was successfully created." }
-        format.json { render :show, status: :created, location: @chat }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @chat.errors, status: :unprocessable_entity }
-      end
-    end
+    #application.chat_count = application.chats.size 
+    #redirect_to application_path(application)
+    #chat = chat_params.merge({number: chat_number, application_id: @application.id})
+    render json: {msg: "Chat created successfully", number: chat.number}, status: :created
+
+
   end
 
   # PATCH/PUT /chats/1 or /chats/1.json
@@ -49,12 +57,8 @@ class ChatsController < ApplicationController
 
   # DELETE /chats/1 or /chats/1.json
   def destroy
-    @chat.destroy
-
-    respond_to do |format|
-      format.html { redirect_to chats_url, notice: "Chat was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    Chat.destroy(@chat.id)
+    render json: {msg: "Chat destroyed successfully"}, status: :ok
   end
 
   private
@@ -65,6 +69,9 @@ class ChatsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def chat_params
-      params.require(:chat).permit(:number, :message_count)
+      params.require(:chat)
     end
+
+
+   
 end
